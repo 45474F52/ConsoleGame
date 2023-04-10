@@ -19,8 +19,6 @@ namespace ConsoleGame
         /// <summary>
         /// Определяет позицию свойства в числе передаваемых параметров в конструктор сущности
         /// </summary>
-        /// <remarks>Указание значения для этого свойства не имеет смысла, если свойство <see cref="UsedInConstructor"/>
-        /// равно <see langword="false"/></remarks>
         public int IndexOnConstructor { get; }
     }
 }
