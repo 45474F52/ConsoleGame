@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ConsoleGame.Global.Saving;
+using System;
 
 namespace ConsoleGame.Entities.Items.Traps
 {

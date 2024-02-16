@@ -1,5 +1,6 @@
 ﻿using ConsoleGame.Entities;
 using ConsoleGame.Extensions;
+using ConsoleGame.Global.Saving;
 using ConsoleGame.Entities.Items.Traps;
 using ConsoleGame.Entities.Alive.Heroes;
 using ConsoleGame.Entities.Alive.Monsters;
@@ -9,9 +10,9 @@ using System.Text;
 using System.Drawing;
 using System.Threading;
 using System.Reflection;
+using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Threading.Tasks;
 
 namespace ConsoleGame
 {
@@ -19,10 +20,10 @@ namespace ConsoleGame
     {
         private static readonly Random _rnd;
 
-        private const char Up = '-';//'▄';
-        private const char Down = '-';//'▀';
-        private const char Left = '|';//'▐';
-        private const char Right = '|';//'▌';
+        private const char Up = '▄';
+        private const char Down = '▀';
+        private const char Left = '▐';
+        private const char Right = '▌';
 
         private const int FlashDelay = 350;
 
@@ -150,7 +151,7 @@ namespace ConsoleGame
             switch (intType)
             {
                 case InteractionType.Attacking:
-                    if (entity is IDamageble damagebleEntity)
+                    if (entity is IDamageable damagebleEntity)
                         damagebleEntity.IncreaseDamage((float)value);
                     break;
                 case InteractionType.OpenClose:
@@ -263,19 +264,20 @@ namespace ConsoleGame
         }
 
         /// <summary>
-        /// Возвращает информацию об объектах арены для их сохранения
+        /// Возвращает информацию об арене и её объектах для их сохранения
         /// </summary>
         /// <remarks>Шаблон записи:<br/>
         /// &lt;EntityTypeFullName&gt;: [ConstructorProperties &lt;FullTypeName-Value&gt;]; [PublicProperties &lt;Name-Value&gt;]
         /// </remarks>
         /// <returns>Возвращает в строковом представлении информацию о свойствах и конструкторах сущностей арены
-        /// для их восстановления при загрузке сохранения</returns>
+        /// <br/>для их восстановления при загрузке сохранения игры</returns>
         public async Task<string> GetDataAsync()
         {
             StringBuilder builder = new StringBuilder();
 
             await Task.Run(() =>
             {
+                builder.AppendLine($"{Width}-{Height}-{Color}");
                 foreach (var item in Entities)
                 {
                     Type type = item.GetType();
@@ -299,17 +301,13 @@ namespace ConsoleGame
 
                     StringBuilder propText = new StringBuilder();
                     foreach (var prop in ctorProps)
-                    {
                         propText.Append($" {prop.PropertyType.FullName}-{prop.GetValue(item)}");
-                    }
 
                     if (savedProps.Any())
                     {
                         propText.Append(';');
                         foreach (var prop in savedProps)
-                        {
                             propText.Append($" {prop.Name}-{prop.GetValue(item)}");
-                        }
                     }
 
                     builder.AppendLine($"{type.FullName}:{propText}");
@@ -317,6 +315,13 @@ namespace ConsoleGame
             });
 
             return builder.ToString();
+        }
+
+        public void ReDraw()
+        {
+            DrawArena();
+            foreach (var entity in Entities.ToList())
+                Instantiate(entity, entity.Position);
         }
     }
 }

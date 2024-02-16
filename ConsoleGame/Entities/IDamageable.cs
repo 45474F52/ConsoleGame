@@ -13,7 +13,7 @@ namespace ConsoleGame.Entities
     /// <summary>
     /// Представляет методы и события для сущности, которой можно нанести урон
     /// </summary>
-    internal interface IDamageble
+    internal interface IDamageable
     {
         /// <summary>
         /// Метод получения урона и возможности отбросить сущность

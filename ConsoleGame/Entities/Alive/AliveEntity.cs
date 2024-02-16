@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ConsoleGame.Global.Saving;
+using System;
 using System.Drawing;
 
 namespace ConsoleGame.Entities.Alive
@@ -6,7 +7,7 @@ namespace ConsoleGame.Entities.Alive
     /// <summary>
     /// Представляет базовый класс для сущности, которой можно нанести урон
     /// </summary>
-    internal abstract class AliveEntity : Entity, IDamageble
+    internal abstract class AliveEntity : Entity, IDamageable
     {
         /// <summary>
         /// Создаёт сущность с передаваемыми символом, цветом, количеством очков жизни, урона и защиты
@@ -84,10 +85,9 @@ namespace ConsoleGame.Entities.Alive
         {
             SoundPlayer.Play(() =>
             {
-                Console.Beep(400, 300);
-                Console.Beep(300, 300);
-                Console.Beep(200, 300);
-                Console.Beep(150, 800);
+                Console.Beep(235, 1000);
+                Console.Beep(185, 1000);
+                Console.Beep(115, 1200);
             });
         }
     }

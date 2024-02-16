@@ -1,17 +1,19 @@
-﻿using ConsoleGame.Input;
-using ConsoleGame.Global;
+﻿using System.Media;
+using ConsoleGame.Global.Input;
+using ConsoleGame.Global.Saving;
 using ConsoleGame.Entities.Alive.Heroes;
-using System.Media;
+using System;
 
 namespace ConsoleGame
 {
-    internal class Program
+    internal static class Program
     {
-        static void Main(string[] args)
+        [STAThread]
+        private static void Main()
         {
             Game game = new Game()
             {
-                WindowTitle = "Anechka`s GAME",
+                WindowTitle = "SUPER HERO GAME",
                 WindowSize = (150, 40)
             };
             game.Start();
@@ -19,10 +21,11 @@ namespace ConsoleGame
             Arena arena = null;
             Hero hero = null;
             UserInterface ui = null;
+
             if (game.Menu.Arena == null)
             {
                 arena = new Arena();
-                hero = new Hero(game.Menu.SelectedCharacter, game.Menu.HeroColor);
+                hero = new Hero(game.Menu.HeroCharacter, game.Menu.HeroColor, game.Menu.HP, game.Menu.DMGP, game.Menu.DFP, game.Menu.ATKS);
                 arena.Instantiate(hero, arena.Center);
                 ui = new UserInterface(arena.Width, ref hero, game.Menu.ChangingDateTime);
             }
@@ -36,6 +39,12 @@ namespace ConsoleGame
             arena.SetUI(ui);
             ui.OnDayChanged += day => arena.SetEntities(day);
 
+            InputSystem.Bindings[Inputs.Save].Callback = async () =>
+            {
+                SystemSounds.Exclamation.Play();
+                await SaveSystem.SaveData(arena, ui);
+            };
+
             hero.CanMove += point => arena.CanMoveTo(ref hero, point);
             hero.OnMove += (point, obj) => arena.DrawIn(point, obj, hero.SkinColor);
             hero.OnDirChanged += (point, obj) => arena.DrawIn(point, obj, hero.SkinColor);
@@ -48,11 +57,9 @@ namespace ConsoleGame
             hero.OnDie += (oldColor, newColor) => arena.DrawIn(hero.Position, '#', newColor);
 
             ui.UpdateUI();
-            InputSystem.Bindings[Inputs.Save].Callback = async () =>
-            {
-                SystemSounds.Exclamation.Play();
-                await SaveSystem.SaveGame(arena, ui);
-            };
+
+
+
             hero.Run();
         }
     }

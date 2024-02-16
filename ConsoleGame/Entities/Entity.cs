@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ConsoleGame.Global.Saving;
+using System;
 using System.Drawing;
 
 namespace ConsoleGame.Entities
@@ -38,5 +39,31 @@ namespace ConsoleGame.Entities
         public Point Position { get; set; }
 
         public override string ToString() => $"{Character}:{SkinColor}:{Position}";
+    }
+
+    /// <summary>
+    /// Возможные направления сущности
+    /// </summary>
+    public enum Direction
+    {
+        /// <summary>
+        /// Налево
+        /// </summary>
+        Left,
+
+        /// <summary>
+        /// Направо
+        /// </summary>
+        Right,
+
+        /// <summary>
+        /// Вверх
+        /// </summary>
+        Up,
+
+        /// <summary>
+        /// Вниз
+        /// </summary>
+        Down
     }
 }

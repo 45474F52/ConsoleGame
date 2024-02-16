@@ -1,10 +1,11 @@
 ﻿using ConsoleGame.Extensions;
-using ConsoleGame.Input;
+using ConsoleGame.Global.Input;
+using ConsoleGame.Global.Saving;
 using System;
-using System.Drawing;
 using System.Linq;
+using System.Drawing;
 using System.Threading.Tasks;
-using static ConsoleGame.Menu;
+using System.Windows.Input;
 
 namespace ConsoleGame.Entities.Alive.Heroes
 {
@@ -13,13 +14,6 @@ namespace ConsoleGame.Entities.Alive.Heroes
     /// </summary>
     internal class Hero : AliveEntity, IMovable
     {
-        /// <summary>
-        /// Создаёт игрока, передавая цвет и основную часть свойств сущности через объект <see cref="Character"/>
-        /// </summary>
-        /// <param name="character">Объект свойств игрока</param>
-        /// <param name="color">Цвет сущности</param>
-        public Hero(Character character, ConsoleColor color) : this(character.Char, color, character.HP, character.DMGP, character.DFP, character.ATKS) { }
-
         /// <summary>
         /// Создаёт игрока с передаваемыми параметрами для инициализации сущности
         /// </summary>
@@ -64,6 +58,8 @@ namespace ConsoleGame.Entities.Alive.Heroes
         private bool _mayInput = true;
         private bool _mayAttack = true;
 
+        private bool _paused;
+
         private Direction _direction;
         /// <summary>
         /// Направление игрока
@@ -99,23 +95,30 @@ namespace ConsoleGame.Entities.Alive.Heroes
             InputSystem.Bindings[Inputs.Attack].Callback = Attack;
         }
 
+        private void StopHero()
+        {
+            Keyboard.ClearFocus();
+            _mayInput = true;
+        }
+
         /// <summary>
         /// Запускает игрока в действие
         /// </summary>
         public void Run()
         {
-            while (HealthPoints > 0f)
+            while (HealthPoints > 0f && !_paused)
             {
                 if (Console.KeyAvailable && _mayInput)
                 {
                     _mayInput = false;
-                    InputCooldown(GlobalParameters.UpdateUITimeInMS);
                     HotKey key = (HotKey)Console.ReadKey(true);
-
                     InputSystem.Bindings.Values.FirstOrDefault(g => g.HotKey == key)?.Callback?.Invoke();
+                    StopHero();
                 }
             }
         }
+
+        public void Pause() => _paused = !_paused;
 
         /// <summary>
         /// Метод перемещения игрока налево
@@ -176,15 +179,6 @@ namespace ConsoleGame.Entities.Alive.Heroes
         }
 
         /// <summary>
-        /// Выполняет задержку возможности нажатия клавиши
-        /// </summary>
-        /// <param name="delay">Время задержки</param>
-        private void InputCooldown(int delay)
-        {
-            Task.Run(async () => await Coroutine.Invoke(() => _mayInput = true, delay));
-        }
-
-        /// <summary>
         /// Выполняет задержку возможности нанесения урона
         /// </summary>
         /// <param name="delay"></param>
@@ -242,39 +236,13 @@ namespace ConsoleGame.Entities.Alive.Heroes
         None,
 
         /// <summary>
-        /// Взаимодействие атаки
+        /// Атака
         /// </summary>
         Attacking,
 
         /// <summary>
-        /// Взаимодействие открытия/зарытия
+        /// Открыть/закрыть
         /// </summary>
         OpenClose
-    }
-
-    /// <summary>
-    /// Возможные направления игрока
-    /// </summary>
-    public enum Direction
-    {
-        /// <summary>
-        /// Налево
-        /// </summary>
-        Left,
-
-        /// <summary>
-        /// Направо
-        /// </summary>
-        Right,
-
-        /// <summary>
-        /// Вверх
-        /// </summary>
-        Up,
-
-        /// <summary>
-        /// Вниз
-        /// </summary>
-        Down
     }
 }

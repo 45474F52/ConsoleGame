@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ConsoleGame.Global.Saving;
+using System;
 
 namespace ConsoleGame.Entities.Alive.Monsters
 {
@@ -13,10 +14,8 @@ namespace ConsoleGame.Entities.Alive.Monsters
         {
             SoundPlayer.Play(() =>
             {
-                Console.Beep(150, 800);
-                Console.Beep(200, 600);
-                Console.Beep(300, 450);
-                Console.Beep(400, 300);
+                Console.Beep(250, 900);
+                Console.Beep(400, 1000);
             });
         }
     }

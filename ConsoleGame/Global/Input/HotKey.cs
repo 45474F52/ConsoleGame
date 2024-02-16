@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ConsoleGame.Input
+namespace ConsoleGame.Global.Input
 {
     /// <summary>
     /// Представляет комбинацию клавиш, нажатой в консоли

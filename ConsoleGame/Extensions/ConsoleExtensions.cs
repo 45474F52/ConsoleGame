@@ -5,6 +5,8 @@ namespace ConsoleGame.Extensions
 {
     internal static class ConsoleExtensions
     {
+        public static (int left, int top) Center => (Console.WindowWidth / 2, Console.WindowHeight / 2);
+
         public static char ReadChar() => ReadChar(((short, short))(Console.CursorLeft, Console.CursorTop));
 
         public static char ReadChar((short, short) point)
@@ -30,6 +32,25 @@ namespace ConsoleGame.Extensions
                                                 new PInvoke.COORD() { X = from.Item1, Y = from.Item2 },
                                                 out int readCount);
             return str.ToString();
+        }
+
+        public static void SetToCenterScreen()
+        {
+            IntPtr window = PInvoke.GetConsoleWindow();
+            int width = PInvoke.GetSystemMetrics(0);
+            int height = PInvoke.GetSystemMetrics(1);
+            PInvoke.GetWindowRect(window, out PInvoke.RECT rect);
+            int cWidth = rect.Right - rect.Left;
+            int cHeight = rect.Bottom - rect.Top;
+            int newX = (width - cWidth) / 2;
+            int newY = (height - cHeight) / 2;
+            PInvoke.SetWindowPos(
+                window,
+                (IntPtr)SWP_CONST.HWND_TOP,
+                newX,
+                newY,
+                0, 0,
+                (uint)SWP_CONST.SWP_NOSIZE | (uint)SWP_CONST.SWP_SHOWWINDOW);
         }
     }
 }

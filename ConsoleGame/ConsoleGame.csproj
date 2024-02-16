@@ -32,6 +32,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
@@ -49,6 +52,7 @@
   <ItemGroup>
     <Compile Include="Arena.cs" />
     <Compile Include="Extensions\PointExtensions.cs" />
+    <Compile Include="Global\ConsoleGUI.cs" />
     <Compile Include="Global\Coroutine.cs" />
     <Compile Include="Entities\Alive\AliveEntity.cs" />
     <Compile Include="Entities\Entity.cs" />
@@ -57,24 +61,27 @@
     <Compile Include="Extensions\ConsoleExtensions.cs" />
     <Compile Include="Extensions\PInvoke.cs" />
     <Compile Include="Entities\Alive\Heroes\Hero.cs" />
-    <Compile Include="Entities\IDamageble.cs" />
-    <Compile Include="Global\Debugger.cs" />
-    <Compile Include="Global\GlobalParameters.cs" />
-    <Compile Include="Global\SaveSystem.cs" />
-    <Compile Include="Input\GlobalHotKey.cs" />
-    <Compile Include="Input\HotKey.cs" />
-    <Compile Include="Input\InputSystem.cs" />
+    <Compile Include="Entities\IDamageable.cs" />
+    <Compile Include="Global\Logger.cs" />
+    <Compile Include="Global\Globals.cs" />
+    <Compile Include="Global\Saving\SaveSystem.cs" />
+    <Compile Include="Global\SettingsSystem.cs" />
+    <Compile Include="Global\Input\GlobalHotKey.cs" />
+    <Compile Include="Global\Input\HotKey.cs" />
+    <Compile Include="Global\Input\InputSystem.cs" />
     <Compile Include="Menu.cs" />
     <Compile Include="Entities\Alive\Monsters\Monster.cs" />
     <Compile Include="Game.cs" />
     <Compile Include="Global\SoundPlayer.cs" />
-    <Compile Include="Global\DataToSaveAttribute.cs" />
+    <Compile Include="Global\Saving\DataToSaveAttribute.cs" />
+    <Compile Include="PauseMenu.cs" />
     <Compile Include="UserInterface.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="app.manifest" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Entities\Items\Weapon\" />

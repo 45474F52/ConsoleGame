@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ConsoleGame.Input
+namespace ConsoleGame.Global.Input
 {
     /// <summary>
     /// Инкапсулирует дополнительную информацию о комбинации клавиш и методе, который должен выполниться при нажатии на комбинацию

@@ -1,5 +1,7 @@
 ﻿using System;
+using ConsoleGame.Extensions;
 using ConsoleGame.Global;
+using ConsoleGame.Global.Saving;
 
 namespace ConsoleGame
 {
@@ -8,6 +10,9 @@ namespace ConsoleGame
     /// </summary>
     internal sealed class Game
     {
+        static Game() =>
+            SaveSystem.SavePath = SettingsSystem.Get("SavePath") as string ?? Environment.CurrentDirectory;
+
         /// <summary>
         /// Игровое меню
         /// </summary>
@@ -28,10 +33,12 @@ namespace ConsoleGame
         /// </summary>
         public void Start()
         {
+            Console.CursorVisible = false;
             Console.Title = WindowTitle;
             Console.SetWindowSize(WindowSize.width, WindowSize.height);
+            ConsoleExtensions.SetToCenterScreen();
 
-            Menu = new Menu(SaveSystem.GetSavedGame());
+            Menu = new Menu(SaveSystem.GetData());
         }
     }
 }

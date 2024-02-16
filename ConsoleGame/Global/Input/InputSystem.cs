@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Text;
-using System.Linq;
-using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 
-namespace ConsoleGame.Input
+namespace ConsoleGame.Global.Input
 {
     /// <summary>
     /// Представляет систему нажатия на комбинации клавиш
@@ -16,12 +15,13 @@ namespace ConsoleGame.Input
         /// </summary>
         public static Dictionary<Inputs, GlobalHotKey> Bindings = new Dictionary<Inputs, GlobalHotKey>()
         {
-            { Inputs.Save, new GlobalHotKey(new HotKey(ConsoleKey.S, ConsoleModifiers.Control), () => { }) },
-            { Inputs.TurnLeft, new GlobalHotKey(new HotKey(ConsoleKey.A, 0), () => { }) },
-            { Inputs.TurnUp, new GlobalHotKey(new HotKey(ConsoleKey.W, 0), () => { }) },
-            { Inputs.TurnRight, new GlobalHotKey(new HotKey(ConsoleKey.D, 0), () => { }) },
-            { Inputs.TurnDown, new GlobalHotKey(new HotKey(ConsoleKey.S, 0), () => { }) },
-            { Inputs.Attack, new GlobalHotKey(new HotKey(ConsoleKey.Spacebar, 0), () => { }) }
+            { Inputs.Save, new GlobalHotKey(new HotKey(ConsoleKey.S, ConsoleModifiers.Control), delegate { }) },
+            { Inputs.Pause, new GlobalHotKey(new HotKey(ConsoleKey.Escape, 0), delegate { }) },
+            { Inputs.TurnLeft, new GlobalHotKey(new HotKey(ConsoleKey.A, 0), delegate { }) },
+            { Inputs.TurnUp, new GlobalHotKey(new HotKey(ConsoleKey.W, 0), delegate { }) },
+            { Inputs.TurnRight, new GlobalHotKey(new HotKey(ConsoleKey.D, 0), delegate { }) },
+            { Inputs.TurnDown, new GlobalHotKey(new HotKey(ConsoleKey.S, 0), delegate { }) },
+            { Inputs.Attack, new GlobalHotKey(new HotKey(ConsoleKey.Spacebar, 0), delegate { }) }
         };
 
         public static async Task<string> GetBindingsDataAsync()
@@ -52,6 +52,11 @@ namespace ConsoleGame.Input
         /// Сохранить игру
         /// </summary>
         Save,
+
+        /// <summary>
+        /// Пауза
+        /// </summary>
+        Pause,
 
         /// <summary>
         /// Движение налево
