@@ -11,3 +11,5 @@
 ![image](https://github.com/45474F52/ConsoleGame/assets/98253223/0c65896b-e90b-4223-8d17-21275494a9e3)
 ## Load Save
 ![image](https://github.com/45474F52/ConsoleGame/assets/98253223/e17ac8fc-4995-4b32-8ae4-f87d283a1969)
+## Важно!
+Программа нуждается в ведении записей в реестре, по этому запускается только с привилегией администратора
