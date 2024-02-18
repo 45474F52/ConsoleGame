@@ -20,7 +20,7 @@ namespace ConsoleGame
         /// <param name="arenaWidth"></param>
         /// <param name="hero"></param>
         /// <param name="time"></param>
-        public UserInterface(int arenaWidth, ref Hero hero, int time)
+        public UserInterface(int arenaWidth, Hero hero, int time)
         {
             _hero = hero;
             _arenaWidth = arenaWidth;

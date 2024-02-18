@@ -26,13 +26,13 @@ namespace ConsoleGame
             {
                 arena = new Arena();
                 hero = new Hero(game.Menu.HeroCharacter, game.Menu.HeroColor, game.Menu.HP, game.Menu.DMGP, game.Menu.DFP, game.Menu.ATKS);
-                arena.Instantiate(hero, arena.Center);
-                ui = new UserInterface(arena.Width, ref hero, game.Menu.ChangingDateTime);
+                arena.Instantiate(hero, arena.center);
+                ui = new UserInterface(arena.width, hero, game.Menu.ChangingDateTime);
             }
             else
             {
                 arena = game.Menu.Arena;
-                hero = arena.Entities.Find(e => e.GetType().Equals(typeof(Hero))) as Hero;
+                hero = arena.entities.Find(e => e.GetType().Equals(typeof(Hero))) as Hero;
                 ui = game.Menu.UI;
             }
 
@@ -41,8 +41,8 @@ namespace ConsoleGame
 
             InputSystem.Bindings[Inputs.Save].Callback = async () =>
             {
-                SystemSounds.Exclamation.Play();
                 await SaveSystem.SaveData(arena, ui);
+                SystemSounds.Exclamation.Play();
             };
 
             hero.CanMove += point => arena.CanMoveTo(ref hero, point);

@@ -18,43 +18,37 @@ namespace ConsoleGame
 {
     internal sealed class Arena
     {
-        private static readonly Random _rnd;
+        private static readonly Random _rnd = new Random();
 
         private const char Up = '▄';
         private const char Down = '▀';
         private const char Left = '▐';
         private const char Right = '▌';
-
         private const int FlashDelay = 350;
 
+        private readonly ConsoleColor _color;
+
         private UserInterface _UI;
-
-        public List<Entity> Entities { get; private set; }
-
-        static Arena() => _rnd = new Random();
 
         public Arena(int width = 50, int height = 20, ConsoleColor color = ConsoleColor.Gray)
         {
             Console.CursorVisible = false;
 
-            Width = width;
-            Height = height;
-            Color = color;
+            this.width = width;
+            this.height = height;
+            _color = color;
 
-            Entities = new List<Entity>();
+            entities = new List<Entity>();
 
-            Center = new Point(Width / 2, Height / 2);
+            center = new Point(this.width / 2, this.height / 2);
 
             DrawArena();
         }
 
-        //public delegate void TakeDamage(float damage, Point newPos);
-
-        public ConsoleColor Color { get; private set; }
-        public int Width { get; private set; }
-        public int Height { get; private set; }
-
-        public Point Center { get; }
+        public readonly int width;
+        public readonly int height;
+        public readonly List<Entity> entities;
+        public readonly Point center;
 
         /// <summary>
         /// Инициализирует свойство интерфейса игрока <see cref="_UI"/>
@@ -68,12 +62,12 @@ namespace ConsoleGame
         private void DrawArena()
         {
             ConsoleColor oldColor = Console.ForegroundColor;
-            Console.ForegroundColor = Color;
+            Console.ForegroundColor = _color;
 
-            Console.WriteLine(new string(Up, Width + 2));
-            for (int h = 1; h <= Height; h++)
-                Console.WriteLine(Left + new string(' ', Width) + Right);
-            Console.WriteLine(new string(Down, Width + 2));
+            Console.WriteLine(new string(Up, width + 2));
+            for (int h = 1; h <= height; h++)
+                Console.WriteLine(Left + new string(' ', width) + Right);
+            Console.WriteLine(new string(Down, width + 2));
 
             Console.ForegroundColor = oldColor;
         }
@@ -90,10 +84,10 @@ namespace ConsoleGame
         /// Находит из списка сущность по её позиции в консоли
         /// </summary>
         /// <param name="point">Позиция сущности</param>
-        /// <returns>Возвращает <see cref="Entity"/> из списка <see cref="Entities"/>,
+        /// <returns>Возвращает <see cref="Entity"/> из списка <see cref="entities"/>,
         /// если объект найден по переданной позиции, иначе <see langword="null"/></returns>
         /// <exception cref="InvalidOperationException"/>
-        private Entity GetEntity(Point point) => Entities.SingleOrDefault(e => e.Position == point);
+        private Entity GetEntity(Point point) => entities.SingleOrDefault(e => e.Position == point);
 
         /// <summary>
         /// Добавляет сущность на арену
@@ -104,7 +98,7 @@ namespace ConsoleGame
         {
             entity.Position = position;
             DrawIn(entity.Position, entity.Character, entity.SkinColor);
-            Entities.Add(entity);
+            entities.Add(entity);
         }
 
         /// <summary>
@@ -169,8 +163,8 @@ namespace ConsoleGame
         /// <returns>Возвращает <see langword="true"/>, если позиция свободна, иначе <see langword="false"/></returns>
         public bool CanMoveTo(ref Hero hero, Point point)
         {
-            bool withinBorderX = point.X <= Width && point.X > 0;
-            bool withinBorderY = point.Y <= Height && point.Y > 0;
+            bool withinBorderX = point.X <= width && point.X > 0;
+            bool withinBorderY = point.Y <= height && point.Y > 0;
 
             if (withinBorderX && withinBorderY)
             {
@@ -193,7 +187,7 @@ namespace ConsoleGame
         private void DeleteEntity(Entity entity)
         {
             DrawIn(entity.Position, ' ');
-            Entities.Remove(entity);
+            entities.Remove(entity);
         }
 
         /// <summary>
@@ -203,18 +197,18 @@ namespace ConsoleGame
         /// <returns>Возвращает свободную позицию на арене для сущности</returns>
         private Point GetRandomPosition(bool redraw = false)
         {
-            Point rndPoint = Center;
+            Point rndPoint = center;
             if (redraw)
             {
                 do
-                    rndPoint = new Point(_rnd.Next(1, Width + 1), _rnd.Next(1, Height + 1));
-                while (Entities.FirstOrDefault(e => e.Position == rndPoint) is Monster && Entities.Count < Width * Height);
+                    rndPoint = new Point(_rnd.Next(1, width + 1), _rnd.Next(1, height + 1));
+                while (entities.FirstOrDefault(e => e.Position == rndPoint) is Monster && entities.Count < width * height);
             }
             else
             {
                 do
-                    rndPoint = new Point(_rnd.Next(1, Width + 1), _rnd.Next(1, Height + 1));
-                while (Entities.Any(e => e.Position == rndPoint) && Entities.Count < Width * Height);
+                    rndPoint = new Point(_rnd.Next(1, width + 1), _rnd.Next(1, height + 1));
+                while (entities.Any(e => e.Position == rndPoint) && entities.Count < width * height);
             }
 
             return rndPoint;
@@ -277,8 +271,8 @@ namespace ConsoleGame
 
             await Task.Run(() =>
             {
-                builder.AppendLine($"{Width}-{Height}-{Color}");
-                foreach (var item in Entities)
+                builder.AppendLine($"{width}-{height}-{_color}");
+                foreach (var item in entities)
                 {
                     Type type = item.GetType();
                     IEnumerable<PropertyInfo> ctorProps = new Collection<PropertyInfo>();
@@ -320,7 +314,7 @@ namespace ConsoleGame
         public void ReDraw()
         {
             DrawArena();
-            foreach (var entity in Entities.ToList())
+            foreach (var entity in entities.ToList())
                 Instantiate(entity, entity.Position);
         }
     }

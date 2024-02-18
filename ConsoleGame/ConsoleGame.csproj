@@ -52,7 +52,8 @@
   <ItemGroup>
     <Compile Include="Arena.cs" />
     <Compile Include="Extensions\PointExtensions.cs" />
-    <Compile Include="Global\ConsoleGUI.cs" />
+    <Compile Include="Global\GUI\ActionGUI.cs" />
+    <Compile Include="Global\GUI\ConsoleGUI.cs" />
     <Compile Include="Global\Coroutine.cs" />
     <Compile Include="Entities\Alive\AliveEntity.cs" />
     <Compile Include="Entities\Entity.cs" />

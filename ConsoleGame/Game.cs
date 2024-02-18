@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Windows.Input;
 using ConsoleGame.Extensions;
 using ConsoleGame.Global;
 using ConsoleGame.Global.Saving;

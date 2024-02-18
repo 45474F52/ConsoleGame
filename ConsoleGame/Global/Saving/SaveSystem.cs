@@ -113,16 +113,21 @@ namespace ConsoleGame.Global.Saving
             string[] data = progress.Split(new[] { DataSeparator }, StringSplitOptions.RemoveEmptyEntries);
 
             string[] inputBindings = data[1].Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
+
             string[] arenaRawData = new string[2];
             arenaRawData[0] = new string(data[2].TakeWhile(c => c != '\r').ToArray());
             arenaRawData[1] = new string(data[2].Skip(arenaRawData[0].Length).ToArray());
+
             string[] arenaData = arenaRawData[0].Split('-');
             string[] entitiesData = arenaRawData[1].Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
+
             string[] uiData = data[3].Split('-');
+
             arena = new Arena(int.Parse(arenaData[0]), int.Parse(arenaData[1]), (ConsoleColor)Enum.Parse(typeof(ConsoleColor), arenaData[2]));
+
             WriteInputSystem(inputBindings);
-            WriteEntities(entitiesData, ref arena);
-            WriteUI(uiData, ref arena, out ui);
+            WriteEntities(entitiesData, arena);
+            WriteUI(uiData, arena, out ui);
         }
 
         /// <summary>
@@ -138,7 +143,7 @@ namespace ConsoleGame.Global.Saving
                 string[] modifiersKeys = bindingData[1].Split(new[] { " + " }, StringSplitOptions.None);
                 ConsoleModifiers modifiers = (ConsoleModifiers)Enum.Parse(typeof(ConsoleModifiers), modifiersKeys[0]);
                 ConsoleKey key = (ConsoleKey)Enum.Parse(typeof(ConsoleKey), modifiersKeys[1]);
-                InputSystem.Bindings[inputType] = new GlobalHotKey(new HotKey(key, modifiers), () => { });
+                InputSystem.Bindings[inputType] = new GlobalHotKey(new HotKey(key, modifiers), delegate { });
             }
         }
 
@@ -147,7 +152,7 @@ namespace ConsoleGame.Global.Saving
         /// </summary>
         /// <param name="entitiesData">Информация о сущностях</param>
         /// <param name="arena">Арена</param>
-        private static void WriteEntities(string[] entitiesData, ref Arena arena)
+        private static void WriteEntities(string[] entitiesData, Arena arena)
         {
             foreach (Entity entity in ParseEntities(entitiesData))
             {
@@ -232,10 +237,10 @@ namespace ConsoleGame.Global.Saving
         /// <param name="uiData">Форматированные значения свойств</param>
         /// <param name="arena">Арена</param>
         /// <param name="ui">Пользовательский интерфейс</param>
-        private static void WriteUI(string[] uiData, ref Arena arena, out UserInterface ui)
+        private static void WriteUI(string[] uiData, Arena arena, out UserInterface ui)
         {
-            Hero hero = arena.Entities.Find(e => e.GetType().Equals(typeof(Hero))) as Hero;
-            ui = new UserInterface(arena.Width, ref hero, int.Parse(uiData[0]))
+            Hero hero = arena.entities.Find(e => e.GetType().Equals(typeof(Hero))) as Hero;
+            ui = new UserInterface(arena.width, hero, int.Parse(uiData[0]))
             {
                 Day = int.Parse(uiData[1]),
                 Score = int.Parse(uiData[2])

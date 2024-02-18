@@ -1,4 +1,5 @@
 ﻿using ConsoleGame.Extensions;
+using ConsoleGame.Global.GUI;
 using ConsoleGame.Global.Input;
 using ConsoleGame.Global.Saving;
 using System;
@@ -11,8 +12,6 @@ namespace ConsoleGame
 {
     internal sealed class Menu
     {
-        private const string Arrow = "► ";
-
         private readonly ConsoleColor _oldColor = Console.ForegroundColor;
 
         public readonly Arena Arena = null;
@@ -30,10 +29,14 @@ namespace ConsoleGame
         public Menu(string progress = "")
         {
             if (string.IsNullOrWhiteSpace(progress))
+            {
                 Actions();
+            }
             else
             {
-                string date = new string(progress.TakeWhile(c => c != SaveSystem.DataSeparator).ToArray()).Replace(Environment.NewLine, string.Empty);
+                string date = new string(progress.TakeWhile(c => c != SaveSystem.DataSeparator).ToArray())
+                    .Replace(Environment.NewLine, string.Empty);
+
                 while (true)
                 {
                     Console.Clear();
@@ -59,148 +62,33 @@ namespace ConsoleGame
 
         private void Actions()
         {
-            string[] actions = new string[]
-            {
-                Arrow + "Start game!", 
-                "Character settings",
-                "Game settings"
-            };
-
-            int selected = default;
-
-            while (true)
-            {
-                Console.Clear();
-
-                ShowInCenterScreen(Console.Title, 0, -5);
-
-                for (int i = 0; i < actions.Length; i++)
-                    ShowInCenterScreen(actions[i], selected == i ? -1 : 0, i - 1);
-
-                var key = Console.ReadKey(true).Key;
-
-                if (key == ConsoleKey.DownArrow || key == ConsoleKey.S)
-                {
-                    if (selected < actions.Length - 1)
+            ConsoleGUI.StartChoosingActionCycle(
+                    actions: new[]
                     {
-                        ++selected;
-                        actions[selected - 1] = actions[selected - 1].Remove(0, 2);
-                    }
-                    else
-                    {
-                        selected = default;
-                        actions[actions.Length - 1] = actions[actions.Length - 1].Remove(0, 2);
-                    }
-
-                    actions[selected] = Arrow + actions[selected];
-                }
-                else if (key == ConsoleKey.UpArrow || key == ConsoleKey.W)
-                {
-                    if (selected > 0)
-                    {
-                        --selected;
-                        actions[selected + 1] = actions[selected + 1].Remove(0, 2);
-                    }
-                    else
-                    {
-                        selected = actions.Length - 1;
-                        actions[0] = actions[0].Remove(0, 2);
-                    }
-
-                    actions[selected] = Arrow + actions[selected];
-                }
-                else if (key == ConsoleKey.Enter || key == ConsoleKey.Spacebar)
-                {
-                    switch (selected)
-                    {
-                        case 0:
-                            return;
-                        case 1:
-                            CharacterSettings();
-                            break;
-                        case 2:
-                            GameSettings();
-                            break;
-                    }
-                }
-            }
+                        new ActionGUI("Start game!", delegate { }),
+                        new ActionGUI("Character settings", CharacterSettings),
+                        new ActionGUI("Game settings", GameSettings)
+                    },
+                    title: Console.Title,
+                    breakerActions: 0);
         }
 
         private void GameSettings()
         {
-            string[] actions = new string[]
-            {
-                Arrow + "Day changing system",
-                "Inputs system",
-                "Save system"
-            };
-
-            int selected = default;
-
-            while (true)
-            {
-                Console.Clear();
-
-                ShowInCenterScreen("Choose action:", 0, -5);
-                for (int i = 0; i < actions.Length; i++)
-                    ShowInCenterScreen(actions[i], selected == i ? -1 : 0, i - 1);
-
-                var key = Console.ReadKey(true).Key;
-
-                if (key == ConsoleKey.DownArrow || key == ConsoleKey.S)
+            ConsoleGUI.StartChoosingActionCycle(
+                actions: new[]
                 {
-                    if (selected < actions.Length - 1)
-                    {
-                        ++selected;
-                        actions[selected - 1] = actions[selected - 1].Remove(0, 2);
-                    }
-                    else
-                    {
-                        selected = default;
-                        actions[actions.Length - 1] = actions[actions.Length - 1].Remove(0, 2);
-                    }
-
-                    actions[selected] = Arrow + actions[selected];
-                }
-                else if (key == ConsoleKey.UpArrow || key == ConsoleKey.W)
-                {
-                    if (selected > 0)
-                    {
-                        --selected;
-                        actions[selected + 1] = actions[selected + 1].Remove(0, 2);
-                    }
-                    else
-                    {
-                        selected = actions.Length - 1;
-                        actions[0] = actions[0].Remove(0, 2);
-                    }
-
-                    actions[selected] = Arrow + actions[selected];
-                }
-                else if (key == ConsoleKey.Enter || key == ConsoleKey.Spacebar)
-                {
-                    switch (selected)
-                    {
-                        case 0:
-                            DayChangingSystem();
-                            break;
-                        case 1:
-                            InputsSystem();
-                            break;
-                        case 2:
-                            SavesSystem();
-                            break;
-                    }
-                }
-                else if (key == ConsoleKey.Escape)
-                    break;
-            }
+                    new ActionGUI("Day changing system", DayChangingSystem),
+                    new ActionGUI("Inputs system", InputsSystem),
+                    new ActionGUI("Save system", SavesSystem)
+                },
+                title: "Choose action:");
         }
 
         private void InputsSystem()
         {
             string[] actions = InputSystem.GetBindingsDataAsync().Result.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
-            actions[0] = Arrow + actions[0];
+            actions[0] = ConsoleGUI.Arrow + actions[0];
             for (int i = 0; i < actions.Length; i++)
                 actions[i] = actions[i].Replace("0 + ", string.Empty).Replace("-", " - ");
 
@@ -215,7 +103,7 @@ namespace ConsoleGame
                 for (int i = 0; i < actions.Length; i++)
                     ShowInCenterScreen(actions[i], selected == i ? -1 : 0, i - 1);
 
-                var key = Console.ReadKey(true).Key;
+                ConsoleKey key = Console.ReadKey(true).Key;
 
                 if (key == ConsoleKey.DownArrow || key == ConsoleKey.S)
                 {
@@ -230,7 +118,7 @@ namespace ConsoleGame
                         actions[actions.Length - 1] = actions[actions.Length - 1].Remove(0, 2);
                     }
 
-                    actions[selected] = Arrow + actions[selected];
+                    actions[selected] = ConsoleGUI.Arrow + actions[selected];
                 }
                 else if (key == ConsoleKey.UpArrow || key == ConsoleKey.W)
                 {
@@ -245,7 +133,7 @@ namespace ConsoleGame
                         actions[0] = actions[0].Remove(0, 2);
                     }
 
-                    actions[selected] = Arrow + actions[selected];
+                    actions[selected] = ConsoleGUI.Arrow + actions[selected];
                 }
                 else if (key == ConsoleKey.Enter || key == ConsoleKey.Spacebar)
                 {
@@ -265,7 +153,7 @@ namespace ConsoleGame
                         if (InputSystem.Bindings.Values.FirstOrDefault(g => g.HotKey.Equals(input)) == null)
                         {
                             InputSystem.Bindings[(Inputs)selected + 1].HotKey = input;
-                            actions[selected] = Arrow + ((Inputs)selected + 1) + " - " + input.ToString().Replace("0 + ", string.Empty);
+                            actions[selected] = ConsoleGUI.Arrow + ((Inputs)selected + 1) + " - " + input.ToString().Replace("0 + ", string.Empty);
                         }
                         break;
                     }
@@ -279,63 +167,28 @@ namespace ConsoleGame
 
         private void SavesSystem()
         {
-            string[] actions = new string[]
-            {
-                "Change path to save file",
-                "Delete save file"
-            };
-
-            bool first = true;
-
-            while (true)
-            {
-                Console.Clear();
-
-                ShowInCenterScreen("Choose action:", 0, -5);
-                ShowInCenterScreen(first ? Arrow + actions[0] : actions[0], first ? -1 : 0, -1);
-                ShowInCenterScreen(!first ? Arrow + actions[1] : actions[1], !first ? -1 : 0, 0);
-
-                var key = Console.ReadKey(true).Key;
-
-                if (key == ConsoleKey.DownArrow || key == ConsoleKey.S || key == ConsoleKey.UpArrow || key == ConsoleKey.W)
-                    first = !first;
-                else if (key == ConsoleKey.Enter || key == ConsoleKey.Spacebar)
+            ConsoleGUI.StartChoosingActionCycle(
+                actions: new[]
                 {
-                    switch (first)
-                    {
-                        case true:
-                            ChangePath();
-                            break;
-                        case false:
-                            DeleteSave();
-                            break;
-                    }
-                }
-                else if (key == ConsoleKey.Escape)
-                    break;
-            }
+                    new ActionGUI("Change path to save file", ChangePath),
+                    new ActionGUI("Delete save file", DeleteSave)
+                },
+                title: "Choose action:");
         }
 
         private void DeleteSave()
         {
-            while (true)
-            {
-                Console.Clear();
-
-                ShowInCenterScreen("Delete save file?", 0, -5);
-                ShowInCenterScreen(Arrow + "Confirm", -1, -1);
-
-                var key = Console.ReadKey(true).Key;
-
-                if (key == ConsoleKey.Enter || key == ConsoleKey.Spacebar)
+            ConsoleGUI.StartChoosingActionCycle(
+                actions: new[]
                 {
-                    if (File.Exists(SaveSystem.SavePath))
-                        File.Delete(SaveSystem.SavePath);
-                    break;
-                }
-                else if (key == ConsoleKey.Escape)
-                    break;
-            }
+                    new ActionGUI("Confirm", () =>
+                    {
+                        if (File.Exists(SaveSystem.SavePath))
+                            File.Delete(SaveSystem.SavePath);
+                    })
+                },
+                title: "Delete save file?",
+                breakerActions: 0);
         }
 
         private void ChangePath()
@@ -348,7 +201,7 @@ namespace ConsoleGame
                 ShowInCenterScreen("Path: " + SaveSystem.SavePath, 0, -2);
                 Console.WriteLine();
                 Console.CursorVisible = true;
-                var key = Console.ReadKey(false).KeyChar;
+                char key = Console.ReadKey(false).KeyChar;
 
                 if (key != (char)ConsoleKey.Escape && key != (char)ConsoleKey.Enter)
                 {
@@ -383,7 +236,7 @@ namespace ConsoleGame
                 ShowInCenterScreen("Write delay of changing days in milliseconds:", 0, -5);
                 Console.WriteLine();
                 Console.CursorVisible = true;
-                var key = Console.ReadKey(false).KeyChar;
+                char key = Console.ReadKey(false).KeyChar;
                 if (key != (char)ConsoleKey.Escape && key != (char)ConsoleKey.Enter)
                 {
                     string value = key + Console.ReadLine();
@@ -400,70 +253,19 @@ namespace ConsoleGame
 
         private void CharacterSettings()
         {
-            int colorsCount = 6;
-            int selected = default;
-
-            while (true)
+            Array colors = Enum.GetValues(typeof(ConsoleColor));
+            ActionGUI[] actions = new ActionGUI[colors.Length];
+            for (int i = 0; i < colors.Length; i++)
             {
-                Console.Clear();
-
-                ShowInCenterScreen("Choose character`s color:", 0, -5);
-                Console.ForegroundColor = ConsoleColor.White;
-                ShowInCenterScreen(selected == 0 ? Arrow + HeroCharacter.ToString() : HeroCharacter.ToString(), selected == 0 ? -1 : 0, -1);
-                Console.ForegroundColor = ConsoleColor.Green;
-                ShowInCenterScreen(selected == 1 ? Arrow + HeroCharacter.ToString() : HeroCharacter.ToString(), selected == 1 ? -1 : 0, 0);
-                Console.ForegroundColor = ConsoleColor.Blue;
-                ShowInCenterScreen(selected == 2 ? Arrow + HeroCharacter.ToString() : HeroCharacter.ToString(), selected == 2 ? -1 : 0, 1);
-                Console.ForegroundColor = ConsoleColor.Yellow;
-                ShowInCenterScreen(selected == 3 ? Arrow + HeroCharacter.ToString() : HeroCharacter.ToString(), selected == 3 ? -1 : 0, 2);
-                Console.ForegroundColor = ConsoleColor.Magenta;
-                ShowInCenterScreen(selected == 4 ? Arrow + HeroCharacter.ToString() : HeroCharacter.ToString(), selected == 4 ? -1 : 0, 3);
-                Console.ForegroundColor = ConsoleColor.Cyan;
-                ShowInCenterScreen(selected == 5 ? Arrow + HeroCharacter.ToString() : HeroCharacter.ToString(), selected == 5 ? -1 : 0, 4);
-
-                var key = Console.ReadKey(true).Key;
-
-                if (key == ConsoleKey.DownArrow || key == ConsoleKey.S)
-                {
-                    if (selected < colorsCount - 1)
-                        ++selected;
-                    else
-                        selected = default;
-                }
-                else if (key == ConsoleKey.UpArrow || key == ConsoleKey.W)
-                {
-                    if (selected > 0)
-                        --selected;
-                    else
-                        selected = colorsCount - 1;
-                }
-                else if (key == ConsoleKey.Enter || key == ConsoleKey.Spacebar)
-                {
-                    switch (selected)
-                    {
-                        case 0:
-                            HeroColor = ConsoleColor.White;
-                            return;
-                        case 1:
-                            HeroColor = ConsoleColor.Green;
-                            return;
-                        case 2:
-                            HeroColor = ConsoleColor.Blue;
-                            return;
-                        case 3:
-                            HeroColor = ConsoleColor.Yellow;
-                            return;
-                        case 4:
-                            HeroColor = ConsoleColor.Magenta;
-                            return;
-                        case 5:
-                            HeroColor = ConsoleColor.Cyan;
-                            return;
-                    }
-                }
-                else if (key == ConsoleKey.Escape)
-                    return;
+                ConsoleColor color = (ConsoleColor)colors.GetValue(i);
+                actions[i] = new ActionGUI(color.ToString(), () => HeroColor = color);
             }
+
+            ConsoleGUI.StartChoosingActionCycle(actions, "Choose character`s color:", true, x =>
+            {
+                if (x != 0)
+                    Console.ForegroundColor = (ConsoleColor)colors.GetValue(x);
+            }, -1);
         }
     }
 }
